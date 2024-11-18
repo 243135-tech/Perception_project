@@ -128,7 +128,7 @@ for idx, roi_pair in enumerate(rois, start=1):
 print("Calibrating the left camera...")
 ret_left, camera_matrix_left, dist_coeffs_left, rvecs_l, tvecs_l = cv2.calibrateCamera(objpoints_left, imgpoints_left, gray_left.shape[::-1], None, None)
 print("Calibrating the right camera...")
-ret_right, camera_matrix_right, dist_coeffs_right, rvecs_r, tvecs_r = cv2.calibrateCamera(objpoints_left, imgpoints_left, gray_right.shape[::-1], None, None)
+ret_right, camera_matrix_right, dist_coeffs_right, rvecs_r, tvecs_r = cv2.calibrateCamera(objpoints_left, imgpoints_right, gray_right.shape[::-1], None, None)
 
 # Use cv2.getOptimalNewCameraMatrix() to get the new camera matrix
 new_camera_matrix_left, roi_left = cv2.getOptimalNewCameraMatrix(camera_matrix_left, dist_coeffs_left, gray_left.shape[::-1], 1, gray_left.shape[::-1])
@@ -138,9 +138,6 @@ new_camera_matrix_right, roi_right = cv2.getOptimalNewCameraMatrix(camera_matrix
 print("Undistorting the images...")
 undistorted_img_left = cv2.undistort(image_left, camera_matrix_left, dist_coeffs_left, None, new_camera_matrix_left)
 undistorted_img_right = cv2.undistort(image_right, camera_matrix_right, dist_coeffs_right, None, new_camera_matrix_right)
-
-#camera_matrix_left = new_camera_matrix_left
-#camera_matrix_right = new_camera_matrix_right
 
 # Display the undistorted images
 plt.figure(figsize=(10, 5))
@@ -171,7 +168,7 @@ ret_stereo, camera_matrix_left, dist_coeffs_left, camera_matrix_right, dist_coef
     camera_matrix_left, dist_coeffs_left,
     camera_matrix_right, dist_coeffs_right,
     img_shape,
-    flags=cv2.CALIB_FIX_INTRINSIC | cv2.CALIB_ZERO_TANGENT_DIST | cv2.CALIB_SAME_FOCAL_LENGTH
+    #flags=cv2.CALIB_FIX_INTRINSIC | cv2.CALIB_ZERO_TANGENT_DIST | cv2.CALIB_SAME_FOCAL_LENGTH
 )
 
 if not ret_stereo:
@@ -184,7 +181,7 @@ R1, R2, P1, P2, Q, _, _ = cv2.stereoRectify(
     camera_matrix_right, dist_coeffs_right,
     img_shape, R, T,
     flags=cv2.CALIB_ZERO_DISPARITY,
-    alpha=1
+    alpha=0.6
 )
 
 # Compute rectification maps
@@ -194,8 +191,11 @@ map1_right, map2_right = cv2.initUndistortRectifyMap(camera_matrix_right, dist_c
 
 # Apply rectification to test images
 print("Rectifying the test images...")
-rectified_img_left = cv2.remap(image_left, map1_left, map2_left, cv2.INTER_LINEAR)
-rectified_img_right = cv2.remap(image_right, map1_right, map2_right, cv2.INTER_LINEAR)
+#rectified_img_left = cv2.remap(image_left, map1_left, map2_left, cv2.INTER_LINEAR)
+#rectified_img_right = cv2.remap(image_right, map1_right, map2_right, cv2.INTER_LINEAR)
+
+rectified_img_left = cv2.remap(undistorted_img_left, map1_left, map2_left, cv2.INTER_LINEAR)
+rectified_img_right = cv2.remap(undistorted_img_right, map1_right, map2_right, cv2.INTER_LINEAR)
 
 # Display rectified images
 plt.figure(figsize=(10, 5))
