@@ -98,7 +98,8 @@ for frame_path in sorted(Path(data_folder_1).glob("*.png")):
             overlay_rect=overlay_rect,
             img=img,
             tracked_predictions=tracked_predictions,
-            label = label
+            frame_path=frame_path,
+            outputs=outputs
         )
 
     # Save annotated frame
@@ -112,3 +113,9 @@ output_video_path = "Perception_project/clean/video2.avi"
 
 # Create a video from images with a frame rate of 20 FPS and preview enabled
 create_video_from_images(image_folder, output_video_path, frame_rate=20, preview=True)
+
+# Print the outputs to a .txt file
+output_path = "Perception_project/clean/outputs_text.txt"
+with open(output_path, "w") as file:
+    for output in outputs:
+        file.write(str(output) + "\n") 

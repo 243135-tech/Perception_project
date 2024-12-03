@@ -64,7 +64,7 @@ def new_kalman(track_id, tracked_predictions, x1, y1, x2, y2, occlusion_rate):
             tracked_predictions[track_id] = {"kalman": kalman, "width": x2 - x1, "height": y2 - y1, "occlusion_rate":occlusion_rate,}
     return tracked_predictions
 
-def process_prediction(track_id, prediction, frame_name, overlay_rect, img, tracked_predictions, label):
+def process_prediction(track_id, prediction, frame_name, overlay_rect, img, tracked_predictions, frame_path, outputs):
 
     """
     Process a single Kalman filter prediction, update bounding box, and recalculate occlusion.
@@ -100,6 +100,8 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
 
     # Update the occlusion rate in tracked_predictions
     tracked_predictions[track_id]['occlusion_rate'] = occlusion_rate
+    if occlusion_rate > 0:
+        outputs = create_outputs(outputs, occlusion_rate, frame_path, "kalman_pred", track_id, new_x1, new_y1, new_x2, new_y2, x, y)
 
     # Draw predictions on the image if occlusion conditions are met
     if occlusion_rate > 0 and box_area > 3000:
