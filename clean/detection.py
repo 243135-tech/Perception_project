@@ -34,6 +34,7 @@ def process_frame(frame_path, model, confidence_threshold=0.5, valid_classes=["p
         cls = int(box.cls[0])
         label = model.names[cls]
         labels.append(label)
+        
 
         # Filter detections based on confidence and valid classes
         if confidence < confidence_threshold or label not in valid_classes:
