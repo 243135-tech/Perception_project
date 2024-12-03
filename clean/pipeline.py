@@ -54,6 +54,8 @@ for frame_path in sorted(Path(data_folder_1).glob("*.png")):
     # Loop and process each tracked object individually
     for i, d in enumerate(trackers): 
         label = labels[i]
+        if i < len(labels):
+            labels_dict[track_id] = labels[i]
         # Process each tracked object (Kalman filter and occlusion detection)
         outputs, tracked_predictions = process_tracked_object(
             d=d,
