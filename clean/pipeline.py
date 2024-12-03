@@ -35,7 +35,7 @@ os.makedirs(output_folder, exist_ok=True)  # Create the obj folder if it doesn't
 # Initialize a list to store occluded predictions
 tracked_predictions = {}
 outputs = []
-
+labels_dict = {}
 # Main loop for processing each frame
 for frame_path in sorted(Path(data_folder_1).glob("*.png")):
     # Process the current frame: detects objects, their positions and labels them
