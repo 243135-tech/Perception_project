@@ -99,14 +99,14 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
     print(f"New Occlusion_rate for {track_id} in {frame_name} is {occlusion_rate}")
 
     # Update the occlusion rate in tracked_predictions
-    tracked_predictions[track_id]['occlusion_rate'] = occlusion_rat
+    tracked_predictions[track_id]['occlusion_rate'] = occlusion_rate
 
     # Find the label corresponding to the track ID
     label = labels_dict.get(track_id, "unknown")
         
     # Call create_outputs to store the result
     outputs = create_outputs(
-            outputs, occlusion_rate, frame_path, label, track_id,
+            outputs, occlusion_rate, frame_name, label, track_id,
             new_x1, new_y1, new_x2, new_y2, x, y)
 
     # Draw predictions on the image if occlusion conditions are met
