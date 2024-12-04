@@ -101,7 +101,7 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
     # Update the occlusion rate in tracked_predictions
     tracked_predictions[track_id]['occlusion_rate'] = occlusion_rate
     if occlusion_rate > 0:
-        outputs = create_outputs(outputs, occlusion_rate, frame_path, "kalman_pred", track_id, new_x1, new_y1, new_x2, new_y2, x, y)
+        outputs = create_outputs(outputs, occlusion_rate, frame_path, "kalman_pred", track_id, new_x1, new_y1, new_x2, new_y2, x, y, 0)
 
     # Draw predictions on the image if occlusion conditions are met
     if occlusion_rate > 0 and box_area > 3000:
@@ -111,7 +111,7 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
 
     return tracked_predictions
 
-def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tracked_predictions):
+def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tracked_predictions, distance):
     """
     Processes a single tracked object, updating its occlusion and Kalman filter states.
     """
@@ -130,7 +130,7 @@ def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tra
     occlusion_rate = (occlusion_area / box_area) * 100 if box_area > 0 else 0
 
     # Add occlusion information to outputs
-    outputs = create_outputs(outputs, occlusion_rate, frame_path, label, track_id, x1, y1, x2, y2, x_center, y_center)
+    outputs = create_outputs(outputs, occlusion_rate, frame_path, label, track_id, x1, y1, x2, y2, x_center, y_center, distance)
 
     # Check if this box is already being tracked
     if track_id not in tracked_predictions:

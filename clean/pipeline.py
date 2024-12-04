@@ -7,6 +7,8 @@ from occlusion import *
 from kalman import *
 from detection import *
 from export_video import *
+from distance_ID_track import *
+# distance_ID_track should improve distance calculation by tracking the boxes from frame to frame. The default is distance.py
 
 # Initialize the YOLO model
 model = YOLO("yolov8l.pt") 
@@ -14,10 +16,10 @@ model = YOLO("yolov8l.pt")
 # Initialize SORT tracker
 mot_tracker = Sort(max_age=3, min_hits=1, iou_threshold=0.5)
 
-overlap_image = resize_image("clean\Overlap_image.png",width=217, height=225)
+overlap_image = resize_image("clean/Overlap_image.png",width=217, height=225)
 
 # Define input and obj folders
-set_img = 2
+set_img = 3
 if set_img == 1: # third sequence
     output_folder = "Perception_project/clean/outputs1"
     data_folder_1 = "Yolov8_perception/data/view1"  # Folder containing input frames
@@ -35,47 +37,55 @@ os.makedirs(output_folder, exist_ok=True)  # Create the obj folder if it doesn't
 # Initialize a list to store occluded predictions
 tracked_predictions = {}
 outputs = []
-def iou(box1, box2):
-    """
-    Compute the Intersection over Union (IoU) of two bounding boxes.
-    """
-    x1 = max(box1[0], box2[0])
-    y1 = max(box1[1], box2[1])
-    x2 = min(box1[2], box2[2])
-    y2 = min(box1[3], box2[3])
 
-    # Compute intersection area
-    intersection = max(0, x2 - x1) * max(0, y2 - y1)
 
-    # Compute union area
-    box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
-    box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
-    union = box1_area + box2_area - intersection
+##Dani
 
-    if union == 0:
-        return 0  # Avoid division by zero
-    return intersection / union
+lables_left = []
+lables_right =[]
+
 
 # Main loop for processing each frame
-for frame_path in sorted(Path(data_folder_1).glob("*.png")):
-    # Process the current frame: detects objects, their positions, and labels them
-    dets, labels, img, ids = process_frame(frame_path, model, confidence_threshold=0.5)
+for left_frame_path, right_frame_path in zip (sorted(Path(data_folder_1).glob("*.png")), sorted(Path(data_folder_2).glob("*.png"))):
 
+    # Process left frame: detects objects, their positions, and labels them
+    dets, labels, img, ids, lables_left = process_frame(left_frame_path, model, confidence_threshold=0.5)
+    
+    # Process right frame: detects objects, their positions, and labels them
+    dets_right, labels_right, img_right, ids_right, lables_right = process_frame(right_frame_path, model, confidence_threshold=0.5)
+    
+    # Match boxes between the left and right frames (e.g., using Euclidean distance and Hungarian algorithm)
+    distances = calculate_distance(lables_left, lables_right, focal_length = 1063 , baseline = 0.6)
+
+    print(distances)
+
+    for label_left, label_right, distance in distances:
+        print(f"Object {label_left:.2f} from left and {label_right:.2f} from right has distance: {distance:.2f} meters")
+    
     # Skip to the next frame if the image failed to load
     if img is None:
         continue
 
-    draw_detected_objects(img, dets, labels)
-    
+    draw_detected_objects(img, dets, labels, distances)
     # Update SORT tracker
     trackers = mot_tracker.update(dets)
 
     # Finds Wazowski
     overlay_rect, img = find_overlay_rectangle(img, overlap_image, threshold=0.4)
 
+    left_frame_num = int(left_frame_path.stem)  # `stem` gets the file name without the extension
+
+    # Skip the first 6 frames of set 3
+    if left_frame_num < 7 and set_img == 3:
+        continue
+
     # Loop and process each tracked object individually
     for i, d in enumerate(trackers): 
         
+        if i < len(distances):
+            distance = distances[i][2]
+        else:
+            distance = 0
         label = labels[i]
 
         # Process each tracked object (Kalman filter and occlusion detection)
@@ -83,10 +93,11 @@ for frame_path in sorted(Path(data_folder_1).glob("*.png")):
             d=d,
             img=img,
             overlay_rect=overlay_rect,
-            frame_path=frame_path,
+            frame_path=left_frame_path,
             label=label,
             outputs=outputs,
-            tracked_predictions=tracked_predictions
+            tracked_predictions=tracked_predictions,
+            distance=distance
         )
     
     # Process prediction: draws bounding box if object is occluded, updates occlusion rate, and updates Kalman filter
@@ -94,28 +105,28 @@ for frame_path in sorted(Path(data_folder_1).glob("*.png")):
         tracked_predictions = process_prediction(
             track_id=track_id,
             prediction=prediction,
-            frame_name=frame_path.name,
+            frame_name=left_frame_path.name,
             overlay_rect=overlay_rect,
             img=img,
             tracked_predictions=tracked_predictions,
-            frame_path=frame_path,
+            frame_path=left_frame_path,
             outputs=outputs
         )
 
     # Save annotated frame
-    print("Saving frame:", frame_path.name)
-    output_path = os.path.join(output_folder, frame_path.name)
+    print("Saving frame:", left_frame_path.name)
+    output_path = os.path.join(output_folder, left_frame_path.name)
     cv2.imwrite(output_path, img)
 
 # Specify the folder and output video path
-image_folder = "Perception_project/clean/outputs2"  
-output_video_path = "Perception_project/clean/video2.avi" 
+image_folder = "Perception_project/clean/outputs3"
+output_video_path = "Perception_project/clean/video3.avi"
 
 # Create a video from images with a frame rate of 20 FPS and preview enabled
 create_video_from_images(image_folder, output_video_path, frame_rate=20, preview=True)
 
 # Print the outputs to a .txt file
-output_path = "Perception_project/clean/outputs_text.txt"
+output_path = "Perception_project/clean/outputs_text3.txt"
 with open(output_path, "w") as file:
     for output in outputs:
         file.write(str(output) + "\n") 
