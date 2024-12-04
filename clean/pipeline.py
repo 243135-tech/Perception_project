@@ -55,7 +55,7 @@ for left_frame_path, right_frame_path in zip (sorted(Path(data_folder_1).glob("*
     dets_right, labels_right, img_right, ids_right, lables_right = process_frame(right_frame_path, model, confidence_threshold=0.5)
     
     # Match boxes between the left and right frames (e.g., using Euclidean distance and Hungarian algorithm)
-    distances = calculate_distance(lables_left, lables_right, focal_length = 1063 , baseline = 0.6)
+    distances = calculate_distance(lables_left, lables_right)
 
     print(distances)
 
