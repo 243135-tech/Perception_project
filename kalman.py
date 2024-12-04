@@ -64,7 +64,7 @@ def new_kalman(track_id, tracked_predictions, x1, y1, x2, y2, occlusion_rate):
             tracked_predictions[track_id] = {"kalman": kalman, "width": x2 - x1, "height": y2 - y1, "occlusion_rate":occlusion_rate,}
     return tracked_predictions
 
-def process_prediction(track_id, prediction, frame_name, overlay_rect, img, tracked_predictions, frame_path, outputs):
+def process_prediction(track_id, prediction, frame_name, overlay_rect, img, tracked_predictions,labels_dict,outputs):
 
     """
     Process a single Kalman filter prediction, update bounding box, and recalculate occlusion.
@@ -100,22 +100,30 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
 
     # Update the occlusion rate in tracked_predictions
     tracked_predictions[track_id]['occlusion_rate'] = occlusion_rate
-    if occlusion_rate > 0:
-        outputs = create_outputs(outputs, occlusion_rate, frame_path, "kalman_pred", track_id, new_x1, new_y1, new_x2, new_y2, x, y)
+
+    # Find the label corresponding to the track ID
+    label = labels_dict.get(track_id, "unknown")
+        
+    # Call create_outputs to store the result
+    outputs = create_outputs(
+            outputs, occlusion_rate, frame_name, label, track_id,
+            new_x1, new_y1, new_x2, new_y2, x, y, 'o','o','o','o','o','o')
 
     # Draw predictions on the image if occlusion conditions are met
     if occlusion_rate > 0 and box_area > 3000:
         cv2.rectangle(img, (new_x1, new_y1), (new_x2, new_y2), (0, 0, 255), 2)
-        cv2.putText(img, f"Kalman Pred", (new_x1, new_y1 - 10),
+        cv2.putText(img, f"Pred: {track_id}", (new_x1, new_y1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-    return tracked_predictions
+    return outputs, tracked_predictions
 
-def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tracked_predictions):
+def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tracked_predictions, 
+                           distance, bearing, rotation, height, width, length):
     """
     Processes a single tracked object, updating its occlusion and Kalman filter states.
     """
-    # Extract tracking information
+    # Extract tracking information)
+
     x1, y1, x2, y2, track_id = map(int, d)
     x_center = (x1 + x2) / 2
     y_center = (y1 + y2) / 2
@@ -130,7 +138,11 @@ def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tra
     occlusion_rate = (occlusion_area / box_area) * 100 if box_area > 0 else 0
 
     # Add occlusion information to outputs
-    outputs = create_outputs(outputs, occlusion_rate, frame_path, label, track_id, x1, y1, x2, y2, x_center, y_center)
+    if label == 'unknow':
+        label = 'kalman_pred'
+    
+    outputs = create_outputs(outputs, occlusion_rate, frame_path, label, track_id, x1, y1, x2, y2, x_center, y_center,
+                             distance, bearing, rotation, height, width, length)
 
     # Check if this box is already being tracked
     if track_id not in tracked_predictions:
