@@ -57,11 +57,11 @@ for left_frame_path, right_frame_path in zip (sorted(Path(data_folder_1).glob("*
     
     # Match boxes between the left and right frames (e.g., using Euclidean distance and Hungarian algorithm)
     distances = calculate_distance(lables_left, lables_right)
-    #bearing = get_bearing_from_stereo(lables_left, lables_right)
-    #rotation = calculate_rotation_y(lables_left, lables_right)
-    #height = get_height(lables_left, lables_right)
-    #width = get_width(lables_left, lables_right)
-    #length = get_length(lables_left, lables_right, img, img_right)
+    #bearings = get_bearing_from_stereo(lables_left, lables_right)
+    #rotations = calculate_rotation_y(lables_left, lables_right)
+    #heights = get_height(lables_left, lables_right)
+    #widths = get_width(lables_left, lables_right)
+    #lengths = get_length(lables_left, lables_right, img, img_right)
 
     print(distances)
 
