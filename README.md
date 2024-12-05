@@ -36,8 +36,12 @@ pip install -r requirements.txt
 ### Download Dataset
 Download the data provided by the course and save them in the following folders:
 ```bash
-data_folder_1
-data_folder_2
+data/view1
+data/view2
+data/view3
+data/view4
+data/view5
+data/view6
 ```
 
 ---
