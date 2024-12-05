@@ -49,6 +49,21 @@ To execute the pipeline, run:
 python -m detection_model.model.main --set_img 2 --output_video_path "output.mp4" --frame_rate 30 --confidence_threshold 0.6
 ```
 
+### Parameters Description:
+
+- `--set_img <value>`:  
+  Specifies the image sequence to use for processing. This parameter takes an integer value corresponding to the image sequence set (1, 2 or 3).
+
+- `--output_video_path <path>`:  
+  Defines the path and filename where the output video will be saved. This is a string parameter where you can provide the file name and extension (e.g., `"output.mp4"`).
+
+- `--frame_rate <value>`:  
+  Sets the frame rate of the output video. This parameter accepts an integer value for the number of frames per second. For example, `30` will produce a video at 30 frames per second.
+
+- `--confidence_threshold <value>`:  
+  Specifies the confidence threshold for object detection. This parameter accepts a float value between `0` and `1`. Objects with detection confidence below this threshold will be ignored. For example, `0.6` means only objects with a detection confidence of 60% or higher will be processed.
+
+
 (frame_path.name, track_id, label, truncated, occlusion, alpha, bbox, dimensions, location, rotation_y, x_center, y_center, distance)
 Output Description
 Values	Name	Description
