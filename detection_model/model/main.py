@@ -18,7 +18,7 @@ def main(set_img, output_video_path, frame_rate, confidence_threshold):
     # Initialize SORT tracker
     mot_tracker = Sort(max_age=3, min_hits=1, iou_threshold=0.5)
 
-    overlap_image = resize_image("Overlap_image.png", width=217, height=225)
+    overlap_image = resize_image("detection_model/model/Overlap_image.png", width=217, height=225)
 
     # Define input and obj folders
     if set_img == 1:  # first sequence

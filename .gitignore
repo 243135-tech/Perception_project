@@ -1,1 +1,10 @@
 /data
+/outputs/outputs1
+/outputs/outputs2
+/outputs/outputs3
+
+yolov8l.pt
+
+/detection_model/model/__pycache__
+/detection_model/src/__pycache__
+/detection_model/utils/__pycache__
