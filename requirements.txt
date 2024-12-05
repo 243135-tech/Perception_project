@@ -1,0 +1,10 @@
+opencv-python>=4.7.0
+numpy<2.0
+argparse>=1.4.0
+pathlib>=1.0.1
+ultralytics>=8.0.0
+matplotlib>=3.7.0
+scikit-image>=0.21.0
+filterpy>=1.4.5
+scipy>=1.10.0
+natsort>=8.3.1

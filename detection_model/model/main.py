@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 import cv2
 from ultralytics import YOLO
-from matplotlib import pyplot as plt
 from ..src.sort import Sort
 from ..utils.occlusion import *
 from ..src.kalman import *
