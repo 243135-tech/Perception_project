@@ -1,9 +1,36 @@
 # Perception for Autonomous Systems Project
-Rapid and novel advances in artificial intelligence, and more specifically in autonomous systems, have given rise to a new era in transportation systems, aiming to ensure efficiency and safety in complex urban situations and environments. This report presents the detection, classification, and tracking of entities in a dynamic and unstructured environment, which is a critical challenge for perception systems in autonomous vehicles.
 
-Focusing on the integration of stereo vision for real-time 3D tracking, the project addresses situations involving pedestrians, cyclists, and vehicles, with a particular emphasis on overcoming occlusion issues. Furthermore, in order to have a reliable perception, the calibration of the stereo camera becomes fundamental.
+## Overview
+The rapid advancements in artificial intelligence, particularly in autonomous systems, have ushered in a new era of transportation technologies. These systems aim to ensure efficiency and safety in complex urban environments. 
 
-This project aims to cope with these two challenges by mixing techniques shown in the course with state-of-art methods needed to get accurate results. In this report the methodologies employed, the challenges encountered, and the insights gained are explained. While the outcomes represent incremental progress, they offer valuable perspectives for ongoing efforts in advancing perception systems for autonomous vehicles.
+This project focuses on the **detection, classification, and tracking** of entities in dynamic and unstructured environments—a critical challenge for autonomous vehicle perception systems. The primary goals include:
+- **Real-time 3D tracking** using stereo vision for pedestrians, cyclists, and vehicles.
+- **Handling occlusion** to ensure reliable perception.
+- **Stereo camera calibration** for accurate depth estimation.
+
+By integrating methodologies introduced during the course with state-of-the-art techniques, this project addresses key challenges and offers insights into advancing perception systems for autonomous vehicles.
+
+---
+
+## Features
+- Real-time 3D object detection, classification, and tracking.
+- Stereo vision integration for depth estimation.
+- Robust handling of occlusions.
+- Modular pipeline with configurable settings.
+- Outputs compatible with downstream tasks like trajectory prediction.
+
+---
+
+## Prerequisites
+To run this project, ensure you have the following:
+- Python 3.8 or later
+- Required Python packages (install via `requirements.txt`)
+- Stereo image sequences for testing
+
+Install dependencies:
+```bash
+pip install -r requirements.txt
+
 
 
 To run the code download the overlap image  and all the .py file and run the pipeline.py.
