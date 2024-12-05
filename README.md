@@ -1,10 +1,6 @@
 # Perception for Autonomous Systems Project
 
-<<<<<<< HEAD
-
-=======
 ![Kalman Prediction](images/kalman_prediction.png)
->>>>>>> 8aa4ea75a66449508034275eec9dd695dbea98af
 
 ## Overview
 The rapid advancements in artificial intelligence, particularly in autonomous systems, have ushered in a new era of transportation technologies. These systems aim to ensure efficiency and safety in complex urban environments.
