@@ -3,7 +3,7 @@ from scipy.optimize import linear_sum_assignment
 import cv2
 import math
 
-focal_length, baseline = 1063, 0.6
+focal_length, baseline = 1063, 0.54
 camera_mtx_left = np.array([[1.16250155e+03, 0.00000000e+00, 6.95968880e+02],
                             [0.00000000e+00, 1.13544076e+03, 2.56041949e+02],
                             [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
@@ -48,16 +48,18 @@ def calculate_distance(left_boxes, right_boxes):
         left_box = left_boxes[left_idx]
         right_box = right_boxes[right_idx]
         
-        # Calculate disparity (difference in x-coordinates between left and right)
-        # Disparity is calculated with bounding boxes centers
-        disparity = (left_box[0] + left_box[2]) / 2 - (right_box[0] + right_box[2]) / 2  # Center x-coordinates
+        # Calculate center points
+        left_center_x = (left_box[0] + left_box[2]) / 2
+        right_center_x = (right_box[0] + right_box[2]) / 2
 
-        
+        # Calculate disparity (difference in x-coordinates of the centers)
+        disparity = left_center_x - right_center_x  # x1_left - x1_right
+
         # Ensure we have a non-zero disparity (avoid division by zero)
-        if disparity != 0:
+        if disparity > 0:
             # Calculate depth (Z = (focal_length * baseline) / disparity)
             depth = (focal_length * baseline) / disparity
-            distances.append((left_box[1], right_box[1], abs(depth)))  # Append labels and distance
+            distances.append((left_box[1], right_box[1], depth))  # Append labels and distance
         else:
             distances.append((left_box[1], right_box[1], float('inf')))  # Set as infinity if no disparity (avoid division by zero)
     
