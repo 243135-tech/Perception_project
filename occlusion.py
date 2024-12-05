@@ -35,19 +35,23 @@ def calculate_occlusion_area(box, overlay_rect):
     return intersection_width * intersection_height
 
 def create_outputs(outputs,occlusion_rate,frame_path,label,track_id,x1,y1,x2,y2,x_center,y_center,
-                   distance, bearing, rotation, height, width, length):
+                   distance, bearing, rotation, height, width, length, truncated, x_cam, y_cam, z_cam):
     if occlusion_rate == 100:
-            outputs.append((frame_path.name,label,track_id, x1, y1, x2, y2, x_center, y_center,distance,
-                            bearing, rotation, height, width, length ,3)) # not visible at all
+            outputs.append((frame_path.name,track_id,label, truncated, 3, bearing, 
+                            x1, y1, x2, y2, height, width, length, x_cam, y_cam, z_cam, 
+                            rotation, x_center, y_center, distance)) # not visible at all
     if occlusion_rate<100 and occlusion_rate >= 50:
-            outputs.append((frame_path.name,label,track_id, x1, y1, x2, y2, x_center, y_center,distance,
-                            bearing, rotation, height, width, length, 2)) # partially visible
+            outputs.append((frame_path.name,track_id,label, truncated, 2, bearing, 
+                            x1, y1, x2, y2, height, width, length, x_cam, y_cam, z_cam, 
+                            rotation, x_center, y_center,distance)) # partially visible
     if occlusion_rate<50 and occlusion_rate > 0:
-            outputs.append((frame_path.name,label,track_id, x1, y1, x2, y2, x_center, y_center,distance,
-                            bearing, rotation, height, width, length, 1)) # mostly visible
+            outputs.append((frame_path.name,track_id,label, truncated, 1, bearing, 
+                            x1, y1, x2, y2, height, width, length, x_cam, y_cam, z_cam, 
+                            rotation, x_center, y_center,distance)) # mostly visible
     else:
-            outputs.append((frame_path.name,label,track_id, x1, y1, x2, y2, x_center, y_center,distance,
-                            bearing, rotation, height, width, length, 0)) # totally visible
+            outputs.append((frame_path.name,track_id,label, truncated, 0, bearing, 
+                            x1, y1, x2, y2, height, width, length, x_cam, y_cam, z_cam, 
+                            rotation, x_center, y_center,distance)) # totally visible
     return outputs
 
 def find_overlay_rectangle(img, overlap_image,set_img, threshold=0.2):

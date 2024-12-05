@@ -24,16 +24,16 @@ overlap_image = resize_image("Overlap_image.png", width=217, height=225)
 set_img = 2
 if set_img == 1: # third sequence
     output_folder = "outputs1"
-    data_folder_1 = "data/view1"  # Folder containing input frames
-    data_folder_2 = "data/view2"  # Folder containing input frames
+    data_folder_1 = "Yolov8_perception/data/view1"  # Folder containing input frames
+    data_folder_2 = "Yolov8_perception/data/view2"  # Folder containing input frames
 elif set_img == 2: # second sequence
     output_folder = "outputs2"
-    data_folder_1 = "data/view3"  # Folder containing input frames
-    data_folder_2 = "data/view4"  # Folder containing input frames
+    data_folder_1 = "Yolov8_perception/data/view3"  # Folder containing input frames
+    data_folder_2 = "Yolov8_perception/data/view4"  # Folder containing input frames
 else: # third sequence
     output_folder = "outputs3"
-    data_folder_1 = "data/view5"  # Folder containing input frames
-    data_folder_2 = "data/view6"  # Folder containing input frames
+    data_folder_1 = "Yolov8_perception/data/view5"  # Folder containing input frames
+    data_folder_2 = "Yolov8_perception/data/view6"  # Folder containing input frames
 os.makedirs(output_folder, exist_ok=True)  # Create the obj folder if it doesn't exist
 
 # Initialize a list to store occluded predictions
@@ -60,6 +60,8 @@ for left_frame_path, right_frame_path in zip (sorted(Path(data_folder_1).glob("*
     heights = get_height(lables_left, lables_right)
     widths = get_width(lables_left, lables_right)
     lengths = get_length(lables_left, lables_right, img, img_right)
+    truncations = get_truncated(lables_left, lables_right, img, img_right)
+    cam_positions = get_camera_position(lables_left, lables_right)
     
     # Skip to the next frame if the image failed to load
     if img is None:
@@ -76,8 +78,8 @@ for left_frame_path, right_frame_path in zip (sorted(Path(data_folder_1).glob("*
     # Loop and process each tracked object individually
     for i, d in enumerate(trackers): 
 
-        distance, bearing, rotation, height, width, length = get_parameters(
-            i, distances, bearings, rotations, heights, widths, lengths
+        distance, bearing, rotation, height, width, length, truncated, x_cam, y_cam, z_cam = get_parameters(
+            i, distances, bearings, rotations, heights, widths, lengths, truncations, cam_positions
         ) 
 
         label = labels[i]
@@ -96,7 +98,11 @@ for left_frame_path, right_frame_path in zip (sorted(Path(data_folder_1).glob("*
             rotation= rotation,
             height = height, 
             width= width, 
-            length = length
+            length = length,
+            truncated=truncated,
+            x_cam=x_cam,
+            y_cam=y_cam,
+            z_cam=z_cam
         )
     
     # Process prediction: draws bounding box if object is occluded, updates occlusion rate, and updates Kalman filter
@@ -113,7 +119,7 @@ for left_frame_path, right_frame_path in zip (sorted(Path(data_folder_1).glob("*
         )
     
     # Save annotated frame
-    print("Saving frame:", left_frame_path.name)
+    #print("Saving frame:", left_frame_path.name)
     output_path = os.path.join(output_folder, left_frame_path.name)
     cv2.imwrite(output_path, img)
 

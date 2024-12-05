@@ -295,7 +295,7 @@ if __name__ == '__main__':
     seq = seq_dets_fn[pattern.find('*'):].split(os.path.sep)[0]
     
     with open(os.path.join('output', '%s.txt'%(seq)),'w') as out_file:
-      print("Processing %s."%(seq))
+      #print("Processing %s."%(seq))
       for frame in range(int(seq_dets[:,0].max())):
         frame += 1 #detection and frame numbers begin at 1
         dets = seq_dets[seq_dets[:, 0]==frame, 2:7]
@@ -314,7 +314,7 @@ if __name__ == '__main__':
         total_time += cycle_time
 
         for d in trackers:
-          print('%d,%d,%.2f,%.2f,%.2f,%.2f,1,-1,-1,-1'%(frame,d[4],d[0],d[1],d[2]-d[0],d[3]-d[1]),file=out_file)
+          #print('%d,%d,%.2f,%.2f,%.2f,%.2f,1,-1,-1,-1'%(frame,d[4],d[0],d[1],d[2]-d[0],d[3]-d[1]),file=out_file)
           if(display):
             d = d.astype(np.int32)
             ax1.add_patch(patches.Rectangle((d[0],d[1]),d[2]-d[0],d[3]-d[1],fill=False,lw=3,ec=colours[d[4]%32,:]))
@@ -324,7 +324,7 @@ if __name__ == '__main__':
           plt.draw()
           ax1.cla()
 
-  print("Total Tracking took: %.3f seconds for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
+  #print("Total Tracking took: %.3f seconds for %d frames or %.1f FPS" % (total_time, total_frames, total_frames / total_time))
 
   if(display):
     print("Note: to get real runtime results run without the option: --display")

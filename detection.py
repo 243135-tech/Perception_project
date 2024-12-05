@@ -26,7 +26,7 @@ def process_frame(frame_path, model, confidence_threshold=0.5, valid_classes=["p
 
     # Log processing details
     print("Processing frame:", frame_path.name)
-    print("Number of detections:", len(detections))
+    #print("Number of detections:", len(detections))
 
     # Process each detection
     for box in detections:
@@ -53,8 +53,8 @@ def process_frame(frame_path, model, confidence_threshold=0.5, valid_classes=["p
 
 
 def draw_detected_objects(img, dets, labels, distances):
-    print(dets)
-    print(distances)
+    #print(dets)
+    #print(distances)
     for det, label in zip(dets, labels):
         x1, y1, x2, y2, confidence = map(int, det)
         

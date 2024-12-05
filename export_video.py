@@ -52,4 +52,4 @@ def create_video_from_images(image_folder, output_video_path, frame_rate=20, pre
     if preview:
         cv2.destroyAllWindows()
 
-    print(f"Video saved as {output_video_path}")
+    #print(f"Video saved as {output_video_path}")

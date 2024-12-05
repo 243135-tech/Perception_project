@@ -77,8 +77,8 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
     # Print predicted position and velocity
     predicted_position = (kalman['x'][0], kalman['x'][2])
     predicted_velocity = (kalman['x'][1], kalman['x'][3])
-    print(f"Predicted position for {track_id} in {frame_name} is {predicted_position}")
-    print(f"Predicted velocity for {track_id} in {frame_name} is {predicted_velocity}")
+    #print(f"Predicted position for {track_id} in {frame_name} is {predicted_position}")
+    #print(f"Predicted velocity for {track_id} in {frame_name} is {predicted_velocity}")
 
     # Update bounding box using the predicted position
     x, y = kalman['x'][0], kalman['x'][2]
@@ -96,7 +96,7 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
     box_area = width * height
     occlusion_area = calculate_occlusion_area((new_x1, new_y1, new_x2, new_y2), overlay_rect)
     occlusion_rate = (occlusion_area / box_area) * 100
-    print(f"New Occlusion_rate for {track_id} in {frame_name} is {occlusion_rate}")
+    #print(f"New Occlusion_rate for {track_id} in {frame_name} is {occlusion_rate}")
 
     # Update the occlusion rate in tracked_predictions
     tracked_predictions[track_id]['occlusion_rate'] = occlusion_rate
@@ -104,10 +104,10 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
     # Find the label corresponding to the track ID
     label = labels_dict.get(track_id, "unknown")
         
-    # Call create_outputs to store the result
-    outputs = create_outputs(
-            outputs, occlusion_rate, frame_name, label, track_id,
-            new_x1, new_y1, new_x2, new_y2, x, y, 'o','o','o','o','o','o')
+    # # Call create_outputs to store the result
+    # outputs = create_outputs(
+    #         outputs, occlusion_rate, frame_name, label, track_id,
+    #         new_x1, new_y1, new_x2, new_y2, x, y, 'o','o','o','o','o','o','o','o','o','o')
 
     # Draw predictions on the image if occlusion conditions are met
     if occlusion_rate > 0 and box_area > 3000:
@@ -118,7 +118,7 @@ def process_prediction(track_id, prediction, frame_name, overlay_rect, img, trac
     return outputs, tracked_predictions
 
 def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tracked_predictions, 
-                           distance, bearing, rotation, height, width, length):
+                           distance, bearing, rotation, height, width, length, truncated, x_cam, y_cam, z_cam):
     """
     Processes a single tracked object, updating its occlusion and Kalman filter states.
     """
@@ -142,7 +142,7 @@ def process_tracked_object(d, img, overlay_rect, frame_path, label, outputs, tra
         label = 'kalman_pred'
     
     outputs = create_outputs(outputs, occlusion_rate, frame_path, label, track_id, x1, y1, x2, y2, x_center, y_center,
-                             distance, bearing, rotation, height, width, length)
+                             distance, bearing, rotation, height, width, length, truncated, x_cam, y_cam, z_cam)
 
     # Check if this box is already being tracked
     if track_id not in tracked_predictions:
