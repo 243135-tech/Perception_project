@@ -39,7 +39,10 @@ Download the data provided by the course and save them in the following folders:
 data_folder_1
 data_folder_2
 ```
-Run
+
+---
+
+## Run
 To execute the pipeline, run:
 
 bash
