@@ -48,16 +48,17 @@ def calculate_distance(left_boxes, right_boxes):
         left_box = left_boxes[left_idx]
         right_box = right_boxes[right_idx]
         
-        # Calculate disparity (difference in x-coordinates between left and right)
-        # Disparity is calculated with bounding boxes centers
-        disparity = (left_box[0] + left_box[2]) / 2 - (right_box[0] + right_box[2]) / 2  # Center x-coordinates
-
-        
+        # Calculate center points
+        left_center_x = (left_box[0] + left_box[2]) / 2
+        right_center_x = (right_box[0] + right_box[2]) / 2
+        print(left_box)
+        # Calculate disparity (difference in x-coordinates of the centers)
+        disparity = left_center_x - right_center_x  # x1_left - x1_right
         # Ensure we have a non-zero disparity (avoid division by zero)
-        if disparity != 0:
+        if disparity > 0:
             # Calculate depth (Z = (focal_length * baseline) / disparity)
             depth = (focal_length * baseline) / disparity
-            distances.append((left_box[1], right_box[1], abs(depth)))  # Append labels and distance
+            distances.append((left_box[1], right_box[1], depth))  # Append labels and distance
         else:
             distances.append((left_box[1], right_box[1], float('inf')))  # Set as infinity if no disparity (avoid division by zero)
     
@@ -234,7 +235,9 @@ def camera_to_world(pixel_coords):
     
     return world_coords
 
-def get_height(left_boxes, right_boxes):
+def get_height(left_boxes, right_boxes, camera_mtx_left = np.array([[1.16250155e+03, 0.00000000e+00, 6.95968880e+02],
+                            [0.00000000e+00, 1.13544076e+03, 2.56041949e+02],
+                            [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]), focal_length = 1063, baseline= 0.6):
 
     # Extract intrinsic parameters from the camera matrix
     fx_left = camera_mtx_left[0, 0]
@@ -286,7 +289,7 @@ def get_height(left_boxes, right_boxes):
             height = world_coords_top[1] - world_coords_bottom[1]
 
             # Append results: (left_label, right_label, height)
-            results.append((left_box[1], right_box[1], abs(height)))
+            results.append((left_box[1], right_box[1], height))
         else:
             # Handle cases with zero disparity (undefined depth or height)
             results.append((left_box[1], right_box[1], None))
@@ -385,98 +388,7 @@ def get_length(left_boxes, right_boxes, image_left, image_right):
 
     return results
 
-def get_truncated(left_boxes, right_boxes, image_left, image_right):
-
-    # Image dimensions
-    img_height_left, img_width_left = image_left.shape[:2]
-    img_height_right, img_width_right = image_right.shape[:2]
-
-    # Match boxes using Hungarian algorithm
-    left_indices, right_indices = match_boxes(left_boxes, right_boxes)
-
-    results = []
-
-    for left_idx, right_idx in zip(left_indices, right_indices):
-        left_box = left_boxes[left_idx]
-        right_box = right_boxes[right_idx]
-
-        # Calculate truncation for left box
-        left_area = (left_box[2] - left_box[0]) * (left_box[3] - left_box[1])
-
-        # Boundaries for the left image
-        left_x1_clipped = max(0, left_box[0])
-        left_y1_clipped = max(0, left_box[1])
-        left_x2_clipped = min(img_width_left, left_box[2])
-        left_y2_clipped = min(img_height_left, left_box[3])
-
-        clipped_area_left = max(0, left_x2_clipped - left_x1_clipped) * max(0, left_y2_clipped - left_y1_clipped)
-        truncated_left = 1 - (clipped_area_left / left_area)
-
-        # Calculate truncation for right box
-        right_area = (right_box[2] - right_box[0]) * (right_box[3] - right_box[1])
-
-        # Boundaries for the right image
-        right_x1_clipped = max(0, right_box[0])
-        right_y1_clipped = max(0, right_box[1])
-        right_x2_clipped = min(img_width_right, right_box[2])
-        right_y2_clipped = min(img_height_right, right_box[3])
-
-        clipped_area_right = max(0, right_x2_clipped - right_x1_clipped) * max(0, right_y2_clipped - right_y1_clipped)
-        truncated_right = 1 - (clipped_area_right / right_area)
-
-        # Average the truncation scores for both views
-        truncated_score = (truncated_left + truncated_right) / 2
-
-        # Append results: (left_label, right_label, truncated_score)
-        results.append((left_box, right_box, truncated_score))
-
-    return results
-
-def get_camera_position(left_boxes, right_boxes):
-
-    # Extract intrinsic parameters from the camera matrix
-    fx_left = camera_mtx_left[0, 0]
-    fy_left = camera_mtx_left[1, 1]
-    cx_left = camera_mtx_left[0, 2]
-    cy_left = camera_mtx_left[1, 2]
-    # Match boxes using Hungarian algorithm
-    left_indices, right_indices = match_boxes(left_boxes, right_boxes)
-
-    results = []
-
-    for left_idx, right_idx in zip(left_indices, right_indices):
-        left_box = left_boxes[left_idx]
-        right_box = right_boxes[right_idx]
-
-        # Compute the center of the bounding box in the left image
-        left_x_center = (left_box[0] + left_box[2]) / 2
-        left_y_center = (left_box[1] + left_box[3]) / 2
-        left_pixel_coords = np.array([left_x_center, left_y_center])
-
-        # Generate depth using disparity
-        disparity = left_x_center - ((right_box[0] + right_box[2]) / 2)
-        if disparity <= 0:  # Handle cases where disparity is invalid
-            print(f"Invalid disparity for boxes: Left {left_box}, Right {right_box}")
-            continue
-        depth = (baseline * fx_left) / disparity
-
-        # Back-project to normalized image coordinates
-        x_norm = (left_x_center - cx_left) / fx_left
-        y_norm = (left_y_center - cy_left) / fy_left
-
-        # Compute camera coordinates
-        x_camera = x_norm * depth
-        y_camera = y_norm * depth
-        z_camera = depth
-
-        # Append results as (left_box, right_box, (x, y, z))
-        results.append((left_box, right_box, (x_camera, y_camera, z_camera)))
-
-    return results
-
-
-
-def get_parameters(i,distances,bearings,rotations,heights,widths,lengths,truncations, cam_positions):
+def get_parameters(i,distances,bearings,rotations,heights,widths,lengths):
         if i >= len(distances):
             distance = 'inf'
         else:
@@ -506,15 +418,5 @@ def get_parameters(i,distances,bearings,rotations,heights,widths,lengths,truncat
             length = 'inf'
         else:
             length = lengths[i][2] 
-
-        if i >= len(truncations):
-            truncated = 'inf'
-        else:
-            truncated = truncations[i][2] 
-
-        if i >= len(cam_positions):
-            x, y, z = 'inf', 'inf', 'inf'
-        else:
-            x, y, z = cam_positions[i][2] 
     
-        return distance, bearing, rotation, height, width, length, truncated, x, y, z
+        return distance, bearing, rotation, height, width, length
