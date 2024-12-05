@@ -1,4 +1,10 @@
-## PfAS Project
+# Perception for Autonomous Systems Project
+Rapid and novel advances in artificial intelligence, and more specifically in autonomous systems, have given rise to a new era in transportation systems, aiming to ensure efficiency and safety in complex urban situations and environments. This report presents the detection, classification, and tracking of entities in a dynamic and unstructured environment, which is a critical challenge for perception systems in autonomous vehicles.
+
+Focusing on the integration of stereo vision for real-time 3D tracking, the project addresses situations involving pedestrians, cyclists, and vehicles, with a particular emphasis on overcoming occlusion issues. Furthermore, in order to have a reliable perception, the calibration of the stereo camera becomes fundamental.
+
+This project aims to cope with these two challenges by mixing techniques shown in the course with state-of-art methods needed to get accurate results. In this report the methodologies employed, the challenges encountered, and the insights gained are explained. While the outcomes represent incremental progress, they offer valuable perspectives for ongoing efforts in advancing perception systems for autonomous vehicles.
+
 
 To run the code download the overlap image  and all the .py file and run the pipeline.py.
 Save the sequences in this format:
