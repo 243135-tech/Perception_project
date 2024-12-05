@@ -24,22 +24,18 @@ By integrating methodologies introduced during the course with state-of-the-art 
 ## Prerequisites
 To run this project, ensure you have the following:
 - Python 3.8 or later
-- Required Python packages (install via `requirements.txt`)
-- Stereo image sequences for testing
 
 ### Clone Repository
 ```bash
 git clone https://github.com/243135-tech/Perception_project
 ```
 ### Install Dependencies
-```
-bash
+```bash
 pip install -r requirements.txt
 ```
 ### Download Dataset
 Download the data provided by the course and save them in the following folders:
-```
-bash
+```bash
 data_folder_1
 data_folder_2
 ```
