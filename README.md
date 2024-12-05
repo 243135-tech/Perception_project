@@ -45,12 +45,10 @@ data_folder_2
 ## Run
 To execute the pipeline, run:
 
-bash
-Copiar código
-python pipeline.py
+```bash
+python -m detection_model.model.main --set_img 2 --output_video_path "output.mp4" --frame_rate 30 --confidence_threshold 0.6
+```
 
-css
-Copiar código
 (frame_path.name, track_id, label, truncated, occlusion, alpha, bbox, dimensions, location, rotation_y, x_center, y_center, distance)
 Output Description
 Values	Name	Description
@@ -67,6 +65,5 @@ Values	Name	Description
 1	x_center	1D coordinate in pixel coordinates indicating the center of the bounding box along the x-axis.
 1	y_center	1D coordinate in pixel coordinates indicating the center of the bounding box along the y-axis.
 1	distance	Distance from the object to the camera.
-Contributions
-Contributions are welcome! Feel free to submit a pull request or raise issues
+
 
